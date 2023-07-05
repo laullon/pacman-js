@@ -7,7 +7,6 @@ const Direction = {
 
 class Character {
   constructor(x, y, image) {
-    var x, y, image;
     this.x = x * blockSize;
     this.y = y * blockSize;
     this.image = image;
@@ -17,13 +16,7 @@ class Character {
   }
 
   draw(ctx) {
-    ctx.drawImage(
-      this.image,
-      this.x - 2,
-      this.y - 2,
-      blockSize + 4,
-      blockSize + 4
-    );
+    ctx.drawImage(this.image, this.x - 2, this.y - 2, blockSize + 4, blockSize + 4);
   }
 
   update() {
@@ -87,12 +80,9 @@ class Character {
     let rowOff = parseInt(this.y % blockSize);
     if (
       (colOff == 0 && rowOff == 0) ||
-      (this.direction == Direction.LEFT &&
-        this.nextDirection == Direction.RIGHT) ||
-      (this.direction == Direction.RIGHT &&
-        this.nextDirection == Direction.LEFT) ||
-      (this.direction == Direction.UP &&
-        this.nextDirection == Direction.DOWN) ||
+      (this.direction == Direction.LEFT && this.nextDirection == Direction.RIGHT) ||
+      (this.direction == Direction.RIGHT && this.nextDirection == Direction.LEFT) ||
+      (this.direction == Direction.UP && this.nextDirection == Direction.DOWN) ||
       (this.direction == Direction.DOWN && this.nextDirection == Direction.UP)
     ) {
       switch (this.nextDirection) {
@@ -177,34 +167,6 @@ class PacMan extends Character {
   }
 
   getPosition() {
-    return [
-      parseInt((this.y + blockSize / 2) / blockSize),
-      parseInt((this.x + blockSize / 2) / blockSize),
-    ];
-  }
-}
-
-class Ghost extends Character {
-  changeDirecction() {
-    super.changeDirecction();
-    this.nextDirection = Math.floor(Math.random() * 4);
-  }
-}
-
-class Clyde extends Ghost {
-  constructor() {
-    super(11, 14, document.getElementById("ghosts-clyde"));
-  }
-}
-
-class Inky extends Ghost {
-  constructor() {
-    super(13, 14, document.getElementById("ghosts-inky"));
-  }
-}
-
-class Pinky extends Ghost {
-  constructor() {
-    super(15, 14, document.getElementById("ghosts-pinky"));
+    return [parseInt((this.y + blockSize / 2) / blockSize), parseInt((this.x + blockSize / 2) / blockSize)];
   }
 }
