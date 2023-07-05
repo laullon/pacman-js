@@ -134,11 +134,17 @@ function drawMap(ctx) {
 }
 
 function checkKey(e){
+    console.log("+")
     player.checkKey(e);
 }
 
+function clearKey(){
+    console.log("-")
+    player.clearKey();
+}
+
 function game() {
-    // gameLoop()
     setInterval(gameLoop, 1000/30);
     document.addEventListener("keydown", checkKey);
+    document.addEventListener("keyup", clearKey);
 }

@@ -90,8 +90,6 @@ class Character {
             }
             if (map[row][col] != 0) {
                 this.direction=this.nextDirection;
-            }else{
-                this.nextDirection=this.direction;
             }
         }        
     }
@@ -145,6 +143,10 @@ class PacMan extends Character {
             break;
         }
     }
+
+    clearKey(){
+        this.nextDirection = this.direction;
+    }
     
     update() {
         super.update()
@@ -155,6 +157,10 @@ class PacMan extends Character {
 }
 
 class Ghost extends Character {
+    changeDirecction() {
+        super.changeDirecction();
+        this.nextDirection = Math.floor(Math.random() * 4);
+    }
 }
 
 class Clyde extends Ghost {
