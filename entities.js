@@ -65,6 +65,12 @@ class Character {
             this.x = oldX;
             this.y = oldY;
         }
+
+        if (col<0) {
+            this.x = map[0].length*blockSize;
+        } else if (col>map[0].length) {
+            this.x = -blockSize;
+        }
     }
     
     changeDirecction() {

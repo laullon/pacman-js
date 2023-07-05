@@ -134,8 +134,10 @@ function drawMap(ctx) {
 }
 
 function checkKey(e){
-    console.log("+")
-    player.checkKey(e);
+    if(!e.repeat){
+        console.log("+")
+        player.checkKey(e);
+    }
 }
 
 function clearKey(){
