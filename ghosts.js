@@ -1,3 +1,19 @@
+const Mode = {
+  SCATTER: 0,
+  CHASE: 1,
+};
+
+const timing = [
+  [7 * 30, Mode.SCATTER], // 7
+  [27 * 30, Mode.CHASE], // 20
+  [34 * 30, Mode.SCATTER], // 7
+  [54 * 30, Mode.CHASE], // 20
+  [59 * 30, Mode.SCATTER], // 5
+  [79 * 30, Mode.CHASE], // 20
+  [84 * 30, Mode.SCATTER], // 5
+  [Number.MAX_VALUE, Mode.CHASE],
+];
+
 class Ghost extends Character {
   constructor(x, y, image, tx, ty) {
     super(x, y, image);
@@ -15,9 +31,12 @@ class Ghost extends Character {
     let rowOff = parseInt(this.y % blockSize);
 
     if (colOff == 0 && rowOff == 0) {
-      if (!this.out && this.outX == col && this.outY == row) this.out = true;
+      if (!this.out && this.outX == col && this.outY == row) {
+        this.out = true;
+        this.doorOpen = false;
+      }
       var wall = [0];
-      if (this.out) wall.push(4);
+      if (this.out || !this.doorOpen) wall.push(4);
       var possibleDirections = [];
       if (!wall.includes(map[row + 1][col])) possibleDirections.push(Direction.DOWN);
       if (!wall.includes(map[row - 1][col])) possibleDirections.push(Direction.UP);
@@ -37,7 +56,25 @@ class Ghost extends Character {
   }
 
   update() {
-    this.updateTarget();
+    if (!this.doorOpen && !this.out) {
+      [this.targetX, this.targetY] = [13, 11];
+    } else {
+      let done = false;
+      for (let i = 0; i < timing.length && !done; i++) {
+        const mode = timing[i];
+        if (frames < mode[0]) {
+          switch (mode[1]) {
+            case Mode.CHASE:
+              this.updateTarget();
+              break;
+            case Mode.SCATTER:
+              [this.targetX, this.targetY] = [this.homeX, this.homeY];
+              break;
+          }
+          done = true;
+        }
+      }
+    }
     super.update();
   }
 
@@ -68,11 +105,33 @@ class Ghost extends Character {
 
   draw(ctx) {
     super.draw(ctx);
-    ctx.beginPath();
-    ctx.moveTo(this.x + blockSize / 2, this.y + blockSize / 2);
-    ctx.lineTo(this.targetX * blockSize + blockSize / 2, this.targetY * blockSize + blockSize / 2);
-    ctx.strokeStyle = "#ffffff";
-    ctx.stroke();
+
+    if (debug) {
+      ctx.beginPath();
+      ctx.moveTo(this.x + blockSize / 2, this.y + blockSize / 2);
+      ctx.lineTo(this.targetX * blockSize + blockSize / 2, this.targetY * blockSize + blockSize / 2);
+      ctx.strokeStyle = "#ffffff";
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(this.x + blockSize / 2, this.y + blockSize / 2);
+      switch (this.direction) {
+        case Direction.DOWN:
+          ctx.lineTo(this.x + blockSize / 2, this.y + blockSize / 2 + blockSize * 2);
+          break;
+        case Direction.UP:
+          ctx.lineTo(this.x + blockSize / 2, this.y + blockSize / 2 - blockSize * 2);
+          break;
+        case Direction.LEFT:
+          ctx.lineTo(this.x + blockSize / 2 - blockSize * 2, this.y + blockSize / 2);
+          break;
+        case Direction.RIGHT:
+          ctx.lineTo(this.x + blockSize / 2 + blockSize * 2, this.y + blockSize / 2);
+          break;
+      }
+      ctx.strokeStyle = "#00ff00";
+      ctx.stroke();
+    }
   }
 }
 
@@ -80,6 +139,11 @@ class Clyde extends Ghost {
   // ORANGE
   constructor() {
     super(11, 14, document.getElementById("ghosts-clyde"), 0, map.length);
+  }
+
+  update() {
+    if (!this.doorOpen) this.doorOpen = dotsEated == 72;
+    super.update();
   }
 
   updateTarget() {
@@ -100,6 +164,11 @@ class Inky extends Ghost {
   // BLUE
   constructor() {
     super(13, 14, document.getElementById("ghosts-inky"), map[0].length - 1, map.length);
+  }
+
+  update() {
+    if (!this.doorOpen) this.doorOpen = dotsEated == 30;
+    super.update();
   }
 
   updateTarget() {
@@ -128,6 +197,7 @@ class Pinky extends Ghost {
   // PINK
   constructor() {
     super(15, 14, document.getElementById("ghosts-pinky"), 3, 0);
+    this.doorOpen = true;
   }
 
   updateTarget() {

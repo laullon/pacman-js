@@ -13,6 +13,7 @@ class Character {
     this.speed = 1;
     this.direction = Direction.RIGHT;
     this.nextDirection = Direction.RIGHT;
+    this.doorOpen = false;
   }
 
   draw(ctx) {
@@ -60,7 +61,9 @@ class Character {
       }
     }
 
-    if (map[row][col] == 0) {
+    let walls = [Map.WALL];
+    if (!this.doorOpen) walls.push(Map.DOOR);
+    if (walls.includes(map[row][col])) {
       this.x = oldX;
       this.y = oldY;
     }
@@ -99,7 +102,9 @@ class Character {
           col--;
           break;
       }
-      if (map[row][col] != 0) {
+      let walls = [Map.WALL];
+      if (!this.doorOpen) walls.push(Map.DOOR);
+      if (!walls.includes(map[row][col])) {
         this.direction = this.nextDirection;
       }
     }

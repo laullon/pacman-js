@@ -42,6 +42,10 @@ const map = [
 
 var pendingDots;
 var points;
+var dotsEated;
+var frames;
+
+const debug = false;
 
 const blockSize = 20; // 800/23
 
@@ -51,6 +55,7 @@ const entities = [new Clyde(), new Inky(), new Pinky(), blinky, player];
 // const entities = [new Blinky(), player];
 
 function gameLoop() {
+  frames++;
   update();
   checkEndGame();
   draw();
@@ -153,6 +158,8 @@ function clearKey() {
 
 function init() {
   points = 0;
+  frames = 0;
+  dotsEated = 0;
   pendingDots = [];
   for (var y = 0; y < map.length; y++) {
     pendingDots.push([]);
@@ -170,6 +177,7 @@ function checkEndGame() {
   const [row, col] = player.getPosition();
   if (pendingDots[row][col]) {
     points++;
+    dotsEated++;
     pendingDots[row][col] = false;
   }
 
