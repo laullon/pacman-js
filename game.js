@@ -188,6 +188,8 @@ function checkEndGame() {
     });
   });
   if (count == 0) clearInterval(gameTimer);
+
+  document.getElementById("points").textContent = points;
 }
 
 var gameTimer;
