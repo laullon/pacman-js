@@ -46,7 +46,8 @@ var points;
 const blockSize = 20; // 800/23
 
 const player = new PacMan();
-const entities = [new Clyde(), new Inky(), new Pinky(), new Blinky(), player];
+const blinky = new Blinky();
+const entities = [new Clyde(), new Inky(), new Pinky(), blinky, player];
 // const entities = [new Blinky(), player];
 
 function gameLoop() {

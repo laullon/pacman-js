@@ -1,8 +1,8 @@
 class Ghost extends Character {
   constructor(x, y, image, tx, ty) {
     super(x, y, image);
-    this.targetX = tx;
-    this.targetY = ty;
+    this.targetX = this.homeX = tx;
+    this.targetY = this.homeY = ty;
     this.outX = 13;
     this.outY = 11;
     this.out = false;
@@ -34,6 +34,11 @@ class Ghost extends Character {
       });
       this.direction = possibleDirections[0];
     }
+  }
+
+  update() {
+    this.updateTarget();
+    super.update();
   }
 
   distanceToTarget(d) {
@@ -76,12 +81,46 @@ class Clyde extends Ghost {
   constructor() {
     super(11, 14, document.getElementById("ghosts-clyde"), 0, map.length);
   }
+
+  updateTarget() {
+    let [pY, pX] = player.getPosition();
+    let [gY, gX] = this.getPosition();
+    let [dY, dX] = [pY - gY, pX - gX];
+
+    let d = Math.sqrt(dX * dX + dY * dY);
+    if (d > 8) {
+      [this.targetY, this.targetX] = [pY, pX];
+    } else {
+      [this.targetY, this.targetX] = [this.homeY, this.homeX];
+    }
+  }
 }
 
 class Inky extends Ghost {
   // BLUE
   constructor() {
     super(13, 14, document.getElementById("ghosts-inky"), map[0].length - 1, map.length);
+  }
+
+  updateTarget() {
+    let [pY, pX] = player.getPosition();
+    switch (player.direction) {
+      case Direction.DOWN:
+        pY += 2;
+        break;
+      case Direction.RIGHT:
+        pX += 2;
+        break;
+      case Direction.UP:
+        pY -= 2;
+      // break;
+      case Direction.LEFT:
+        pX -= 2;
+        break;
+    }
+    let [gY, gX] = blinky.getPosition();
+    let [dY, dX] = [pY - gY, pX - gX];
+    [this.targetY, this.targetX] = [pY + dY * 2, pX + dX * 2];
   }
 }
 
@@ -91,7 +130,7 @@ class Pinky extends Ghost {
     super(15, 14, document.getElementById("ghosts-pinky"), 3, 0);
   }
 
-  update() {
+  updateTarget() {
     [this.targetY, this.targetX] = player.getPosition();
     switch (player.direction) {
       case Direction.DOWN:
@@ -107,7 +146,6 @@ class Pinky extends Ghost {
         this.targetX -= 4;
         break;
     }
-    super.update();
   }
 }
 
@@ -118,8 +156,7 @@ class Blinky extends Ghost {
     this.out = true;
   }
 
-  update() {
+  updateTarget() {
     [this.targetY, this.targetX] = player.getPosition();
-    super.update();
   }
 }

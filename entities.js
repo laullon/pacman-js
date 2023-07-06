@@ -104,6 +104,10 @@ class Character {
       }
     }
   }
+
+  getPosition() {
+    return [parseInt((this.y + blockSize / 2) / blockSize), parseInt((this.x + blockSize / 2) / blockSize)];
+  }
 }
 
 class PacMan extends Character {
@@ -164,9 +168,5 @@ class PacMan extends Character {
     this.frame += 1;
     this.frame %= 3;
     this.image = this.images[this.direction][this.frame];
-  }
-
-  getPosition() {
-    return [parseInt((this.y + blockSize / 2) / blockSize), parseInt((this.x + blockSize / 2) / blockSize)];
   }
 }
