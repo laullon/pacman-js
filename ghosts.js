@@ -166,6 +166,9 @@ class Ghost extends Character {
       ctx.stroke();
     }
   }
+  reset() {
+    super.reset();
+  }
 }
 
 class Clyde extends Ghost {
@@ -175,7 +178,7 @@ class Clyde extends Ghost {
   }
 
   update() {
-    if (!this.doorOpen) this.doorOpen = dotsEated == 72;
+    if (!this.doorOpen) this.doorOpen = dotsEated >= 72;
     super.update();
   }
 
@@ -200,7 +203,7 @@ class Inky extends Ghost {
   }
 
   update() {
-    if (!this.doorOpen) this.doorOpen = dotsEated == 30;
+    if (!this.doorOpen) this.doorOpen = dotsEated >= 30;
     super.update();
   }
 
@@ -260,5 +263,14 @@ class Blinky extends Ghost {
 
   updateTarget() {
     [this.targetY, this.targetX] = player.getPosition();
+  }
+
+  reset() {
+    super.reset();
+    this.x = 13 * blockSize;
+    this.y = 13 * blockSize;
+    this.direction = Direction.UP;
+    this.doorOpen = true;
+    this.out = false;
   }
 }

@@ -5,10 +5,13 @@ const Direction = {
   UP: 3,
 };
 
+const characterOff = blockSize / 6;
+const characterSize = blockSize + characterOff * 2;
+
 class Character {
   constructor(x, y, image) {
-    this.x = x * blockSize;
-    this.y = y * blockSize;
+    this.orgX = this.x = x * blockSize;
+    this.orgY = this.y = y * blockSize;
     this.image = image;
     this.speed = blockSize / 6;
     this.direction = this.nextDirection = Direction.LEFT;
@@ -16,7 +19,12 @@ class Character {
   }
 
   draw(ctx) {
-    ctx.drawImage(this.image, this.x - 2, this.y - 2, blockSize * 1.3, blockSize * 1.3);
+    const [x, y, w, h] = this.getRect();
+    ctx.drawImage(this.image, x, y, w, h);
+  }
+
+  getRect() {
+    return [this.x - characterOff, this.y - characterOff, characterSize, characterSize];
   }
 
   update() {
@@ -111,6 +119,12 @@ class Character {
 
   getPosition() {
     return [parseInt((this.y + blockSize / 2) / blockSize), parseInt((this.x + blockSize / 2) / blockSize)];
+  }
+
+  reset() {
+    this.x = this.orgX;
+    this.y = this.orgY;
+    this.direction = Direction.LEFT;
   }
 }
 
