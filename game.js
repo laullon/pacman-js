@@ -44,18 +44,22 @@ var pendingDots;
 var points;
 var dotsEated;
 var frames;
+var frightened;
 
 const debug = false;
 
-const blockSize = 20; // 800/23
+const blockSize = 24; // 800/23
 
 const player = new PacMan();
 const blinky = new Blinky();
-const entities = [new Clyde(), new Inky(), new Pinky(), blinky, player];
+const ghosts = [new Clyde(), new Inky(), new Pinky(), blinky];
+const entities = [...ghosts, player];
 // const entities = [new Blinky(), player];
 
 function gameLoop() {
-  frames++;
+  if (!frightened) {
+    frames++;
+  }
   update();
   checkEndGame();
   draw();
@@ -160,6 +164,7 @@ function init() {
   points = 0;
   frames = 0;
   dotsEated = 0;
+  frightened = false;
   pendingDots = [];
   for (var y = 0; y < map.length; y++) {
     pendingDots.push([]);
@@ -179,6 +184,15 @@ function checkEndGame() {
     points++;
     dotsEated++;
     pendingDots[row][col] = false;
+
+    if (map[row][col] == Map.POWER) {
+      frightened = true;
+      ghosts.forEach((ghost) => {
+        ghost.reverse();
+      });
+      setTimeout(() => (frightened = false), 7000);
+      setTimeout(() => flash(), 4500);
+    }
   }
 
   let count = 0;
@@ -190,6 +204,15 @@ function checkEndGame() {
   if (count == 0) clearInterval(gameTimer);
 
   document.getElementById("points").textContent = points;
+}
+
+function flash() {
+  if (frightened) {
+    ghosts.forEach((ghost) => {
+      ghost.flash();
+    });
+    setTimeout(() => flash(), 250);
+  }
 }
 
 var gameTimer;

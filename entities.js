@@ -10,14 +10,13 @@ class Character {
     this.x = x * blockSize;
     this.y = y * blockSize;
     this.image = image;
-    this.speed = 1;
-    this.direction = Direction.RIGHT;
-    this.nextDirection = Direction.RIGHT;
+    this.speed = blockSize / 6;
+    this.direction = this.nextDirection = Direction.LEFT;
     this.doorOpen = false;
   }
 
   draw(ctx) {
-    ctx.drawImage(this.image, this.x - 2, this.y - 2, blockSize + 4, blockSize + 4);
+    ctx.drawImage(this.image, this.x - 2, this.y - 2, blockSize * 1.3, blockSize * 1.3);
   }
 
   update() {
@@ -142,7 +141,6 @@ class PacMan extends Character {
 
   constructor() {
     super(13, 23, null);
-    this.speed = 2;
     this.update();
   }
 
@@ -171,7 +169,7 @@ class PacMan extends Character {
   update() {
     super.update();
     this.frame += 1;
-    this.frame %= 3;
-    this.image = this.images[this.direction][this.frame];
+    this.frame %= 6;
+    this.image = this.images[this.direction][parseInt(this.frame / 2)];
   }
 }

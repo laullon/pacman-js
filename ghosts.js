@@ -17,11 +17,15 @@ const timing = [
 class Ghost extends Character {
   constructor(x, y, image, tx, ty) {
     super(x, y, image);
+    this.normalImage = image;
+    this.blue = document.getElementById("ghosts-blue_ghost");
     this.targetX = this.homeX = tx;
     this.targetY = this.homeY = ty;
     this.outX = 13;
     this.outY = 11;
     this.out = false;
+    this.flashing = false;
+    this.prevMode = Mode.SCATTER;
   }
 
   changeDirecction() {
@@ -31,9 +35,11 @@ class Ghost extends Character {
     let rowOff = parseInt(this.y % blockSize);
 
     if (colOff == 0 && rowOff == 0) {
-      if (!this.out && this.outX == col && this.outY == row) {
-        this.out = true;
+      if (!this.out && this.outY == row) {
         this.doorOpen = false;
+        this.direction = Direction.LEFT;
+        if (col < this.outX - 2) this.out = true;
+        return;
       }
       var wall = [0];
       if (this.out || !this.doorOpen) wall.push(4);
@@ -51,8 +57,21 @@ class Ghost extends Character {
       possibleDirections.sort((d1, d2) => {
         return this.distanceToTarget(d1) - this.distanceToTarget(d2);
       });
-      this.direction = possibleDirections[0];
+      if (frightened && possibleDirections.length > 0) {
+        this.speed = blockSize / 8;
+        this.direction = possibleDirections[Math.floor(Math.random() * possibleDirections.length)];
+      } else {
+        this.direction = possibleDirections[0];
+        this.speed = blockSize / 6;
+      }
     }
+  }
+
+  reverse() {
+    if (this.direction == Direction.UP) this.direction = Direction.DOWN;
+    if (this.direction == Direction.DOWN) this.direction = Direction.UP;
+    if (this.direction == Direction.LEFT) this.direction = Direction.RIGHT;
+    if (this.direction == Direction.RIGHT) this.direction = Direction.LEFT;
   }
 
   update() {
@@ -63,13 +82,18 @@ class Ghost extends Character {
       for (let i = 0; i < timing.length && !done; i++) {
         const mode = timing[i];
         if (frames < mode[0]) {
-          switch (mode[1]) {
-            case Mode.CHASE:
-              this.updateTarget();
-              break;
-            case Mode.SCATTER:
-              [this.targetX, this.targetY] = [this.homeX, this.homeY];
-              break;
+          if (this.prevMode != mode[1]) {
+            this.prevMode = mode[1];
+            this.reverse();
+          } else {
+            switch (mode[1]) {
+              case Mode.CHASE:
+                this.updateTarget();
+                break;
+              case Mode.SCATTER:
+                [this.targetX, this.targetY] = [this.homeX, this.homeY];
+                break;
+            }
           }
           done = true;
         }
@@ -103,7 +127,16 @@ class Ghost extends Character {
     return Math.sqrt(dx * dx + dy * dy);
   }
 
+  flash() {
+    this.flashing = !this.flashing;
+  }
+
   draw(ctx) {
+    if (frightened && !this.flashing) {
+      this.image = this.blue;
+    } else {
+      this.image = this.normalImage;
+    }
     super.draw(ctx);
 
     if (debug) {
@@ -223,7 +256,6 @@ class Blinky extends Ghost {
   // RED
   constructor() {
     super(13, 11, document.getElementById("ghosts-blinky"), map[0].length - 3, 0);
-    this.out = true;
   }
 
   updateTarget() {
